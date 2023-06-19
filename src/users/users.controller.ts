@@ -9,6 +9,7 @@ import {
   Patch,
   NotFoundException,
   Session,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -27,7 +28,15 @@ export class UsersController {
 
   @Get('/whoami')
   whoAmI(@Session() session: any) {
+    if (!session.userId) {
+      throw new UnauthorizedException('You have not signed in yet');
+    }
     return this.usersService.findUser(session.userId);
+  }
+
+  @Post('/signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
   }
 
   @Post('/signup')
