@@ -10,6 +10,7 @@ import {
   NotFoundException,
   Session,
   UnauthorizedException,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -17,9 +18,13 @@ import { UpdateUserDTO } from './dtos/update-user.dto';
 import { UserDTO } from './dtos/user.dto';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
+import { User } from './user.entity';
 
 @Serialize(UserDTO)
 @Controller('auth')
+@UseInterceptors(CurrentUserInterceptor)
 export class UsersController {
   constructor(
     private usersService: UsersService,
@@ -27,11 +32,11 @@ export class UsersController {
   ) {}
 
   @Get('/whoami')
-  whoAmI(@Session() session: any) {
-    if (!session.userId) {
+  whoAmI(@CurrentUser() user: User) {
+    if (!user) {
       throw new UnauthorizedException('You have not signed in yet');
     }
-    return this.usersService.findUser(session.userId);
+    return user;
   }
 
   @Post('/signout')
