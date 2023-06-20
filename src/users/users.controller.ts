@@ -9,7 +9,7 @@ import {
   Patch,
   NotFoundException,
   Session,
-  UnauthorizedException,
+  UseGuards,
 } from '@nestjs/common';
 import { CreateUserDTO } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
@@ -19,6 +19,7 @@ import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { User } from './user.entity';
+import { AuthGuard } from 'src/guards/auth.guard';
 
 @Serialize(UserDTO)
 @Controller('auth')
@@ -29,10 +30,8 @@ export class UsersController {
   ) {}
 
   @Get('/whoami')
+  @UseGuards(AuthGuard)
   whoAmI(@CurrentUser() user: User) {
-    if (!user) {
-      throw new UnauthorizedException('You have not signed in yet');
-    }
     return user;
   }
 
