@@ -6,8 +6,8 @@ import { UsersModule } from './users/users.module';
 import { ReportsModule } from './reports/reports.module';
 import { APP_PIPE } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { dataSourceOptions } from 'typeorm.config';
 const cookieSession = require('cookie-session');
-const dbConfig = require('../ormconfig.js');
 
 @Module({
   imports: [
@@ -17,7 +17,7 @@ const dbConfig = require('../ormconfig.js');
     }),
     UsersModule,
     ReportsModule,
-    TypeOrmModule.forRoot(dbConfig),
+    TypeOrmModule.forRoot(dataSourceOptions),
   ],
   controllers: [AppController],
   providers: [
